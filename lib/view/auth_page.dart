@@ -104,6 +104,17 @@ class AuthPage extends ConsumerWidget {
                           ref.read(authProvider.notifier).userLogin(
                               email: mailController.text.trim(),
                               password: passController.text.trim());
+                        } else {
+                          if (image == null) {
+                            ShowSnack.showErrorSnack(
+                                context, 'Please select an image!');
+                          } else {
+                            ref.read(authProvider.notifier).userSignUp(
+                                email: mailController.text.trim(),
+                                password: passController.text.trim(),
+                                username: nameController.text.trim(),
+                                image: image);
+                          }
                         }
                       }
                     },
@@ -118,7 +129,7 @@ class AuthPage extends ConsumerWidget {
                       Center(
                         child: Text(isLogin
                             ? 'don\'t have an Account?'
-                            : 'Already have an Account'),
+                            : 'Already have an Account?'),
                       ),
                       TextButton(
                           onPressed: () {

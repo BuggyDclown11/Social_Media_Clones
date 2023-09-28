@@ -38,18 +38,24 @@ class AuthService {
       final response = await auth.createUserWithEmailAndPassword(
           email: email, password: password);
 
-          await FirebaseChatCore.instance.createUserInFirestore(
-  types.User(
-    firstName: username,
-    id: response.user!.uid, // UID from Firebase Authentication
-    imageUrl:url,
-    metadata: {
-      'email':email,
-      'token':token
+      await FirebaseChatCore.instance.createUserInFirestore(
+        types.User(
+            firstName: username,
+            id: response.user!.uid, // UID from Firebase Authentication
+            imageUrl: url,
+            metadata: {'email': email, 'token': token}),
+      );
+      return right(true);
+    } on FirebaseAuthException catch (e) {
+      return left(e.message.toString());
+    } on FirebaseException catch (e) {
+      return left(e.message.toString());
     }
+  }
 
-  ),
-);
+  static Future<Either<String, bool>> userLogOut() async {
+    try {
+      final response = await auth.signOut();
       return right(true);
     } on FirebaseAuthException catch (e) {
       return left(e.message.toString());

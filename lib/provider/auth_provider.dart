@@ -5,8 +5,9 @@ import 'package:image_picker/image_picker.dart';
 
 import '../model/common_state.dart';
 
-final authProvider = StateNotifierProvider<AuthProvider,CommonState>((ref) => AuthProvider(
-    CommonState(errText: '', isError: false, isLoad: false, isSuccess: false)));
+final authProvider = StateNotifierProvider<AuthProvider, CommonState>((ref) =>
+    AuthProvider(CommonState(
+        errText: '', isError: false, isLoad: false, isSuccess: false)));
 
 class AuthProvider extends StateNotifier<CommonState> {
   AuthProvider(super.state);
@@ -34,6 +35,19 @@ class AuthProvider extends StateNotifier<CommonState> {
         errText: '', isLoad: true, isSuccess: false, isError: false);
     final response =
         await AuthService.userLogin(email: email, password: password);
+    response.fold((l) {
+      state = state.copyWith(
+          errText: l, isLoad: false, isSuccess: false, isError: true);
+    }, (r) {
+      state = state.copyWith(
+          errText: '', isLoad: false, isSuccess: r, isError: false);
+    });
+  }
+
+  Future<void> userLogOut() async {
+    state = state.copyWith(
+        errText: '', isLoad: true, isSuccess: false, isError: false);
+    final response = await AuthService.userLogOut();
     response.fold((l) {
       state = state.copyWith(
           errText: l, isLoad: false, isSuccess: false, isError: true);
