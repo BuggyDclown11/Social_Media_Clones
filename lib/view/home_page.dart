@@ -1,5 +1,7 @@
+import 'package:fireapp/common/show_snackbar.dart';
 import 'package:fireapp/constant/sizes.dart';
 import 'package:fireapp/provider/auth_provider.dart';
+import 'package:fireapp/provider/crud_provider.dart';
 import 'package:fireapp/services/auth_service.dart';
 import 'package:fireapp/services/crud_sevice.dart';
 import 'package:fireapp/view/create_post.dart';
@@ -7,9 +9,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 class HomePage extends ConsumerWidget {
-  const HomePage({Key? key}) : super(key: key);
+  late types.User user;
 
   @override
   Widget build(BuildContext context, ref) {
@@ -21,6 +24,7 @@ class HomePage extends ConsumerWidget {
       drawer: Drawer(
           child: singleData.when(
               data: (data) {
+                user = data;
                 return ListView(
                   children: [
                     Padding(
@@ -135,9 +139,31 @@ class HomePage extends ConsumerWidget {
                                         child: Text('${data[index].detail}')),
                                     Row(
                                       children: [
-                                        IconButton(
-                                            onPressed: () {},
-                                            icon: Icon(Icons.thumb_up)),
+                                        if (authData.uid != data[index].userId)
+                                          IconButton(
+                                              onPressed: () {
+                                                if (data[index]
+                                                    .like
+                                                    .username
+                                                    .contains(user.firstName)) {
+                                                  ShowSnack.showErrorSnack(
+                                                      context,
+                                                      'you have already liked this post');
+                                                } else {
+                                                  ref
+                                                      .read(
+                                                          crudProvider.notifier)
+                                                      .likePost(
+                                                          username:
+                                                              user.firstName!,
+                                                          postId: data[index]
+                                                              .postId,
+                                                          like: data[index]
+                                                              .like
+                                                              .likes);
+                                                }
+                                              },
+                                              icon: Icon(Icons.thumb_up)),
                                         if (data[index].like.likes > 0)
                                           Text(
                                             '${data[index].like.likes.toString()}',

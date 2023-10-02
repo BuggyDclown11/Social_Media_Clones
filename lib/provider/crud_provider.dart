@@ -1,4 +1,4 @@
-
+import 'package:fireapp/model/post_model.dart';
 import 'package:fireapp/services/crud_sevice.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,6 +62,42 @@ class CrudProvider extends StateNotifier<CommonState> {
         postId: postId,
         image: image,
         imageId: imageId);
+    response.fold(
+        (l) => {
+              state = state.copyWith(
+                  errText: l, isError: true, isLoad: false, isSuccess: false)
+            },
+        (r) => {
+              state = state.copyWith(
+                  errText: '', isError: false, isLoad: false, isSuccess: r)
+            });
+  }
+
+  Future<void> likePost(
+      {required String username,
+      required String postId,
+      required int like}) async {
+    state = state.copyWith(
+        errText: '', isError: false, isLoad: true, isSuccess: false);
+    final response = await CrudService.likePost(
+        username: username, postId: postId, like: like);
+    response.fold(
+        (l) => {
+              state = state.copyWith(
+                  errText: l, isError: true, isLoad: false, isSuccess: false)
+            },
+        (r) => {
+              state = state.copyWith(
+                  errText: '', isError: false, isLoad: false, isSuccess: r)
+            });
+  }
+
+  Future<void> commentPost(
+      {required Comment comment, required String postId}) async {
+    state = state.copyWith(
+        errText: '', isError: false, isLoad: true, isSuccess: false);
+    final response =
+        await CrudService.commentPost(comment: comment, postId: postId);
     response.fold(
         (l) => {
               state = state.copyWith(

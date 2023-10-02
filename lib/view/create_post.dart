@@ -102,6 +102,7 @@ class CreatePost extends ConsumerWidget {
                               detail: DetailController.text.trim(),
                               userId: FirebaseAuth.instance.currentUser!.uid,
                               image: image);
+                          Get.back();
                         }
                       }
                     },
