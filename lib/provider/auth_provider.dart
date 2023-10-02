@@ -33,8 +33,8 @@ class AuthProvider extends StateNotifier<CommonState> {
       required XFile image}) async {
     state = state.copyWith(
         errText: '', isLoad: true, isSuccess: false, isError: false);
-    final response =
-        await AuthService.userLogin(email: email, password: password);
+    final response = await AuthService.userSignUp(
+        email: email, password: password, username: username, image: image);
     response.fold((l) {
       state = state.copyWith(
           errText: l, isLoad: false, isSuccess: false, isError: true);

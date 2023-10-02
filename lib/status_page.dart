@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final authStream =
-    StreamProvider((ref) => FirebaseAuth.instance.authStateChanges());
+final authStream = StreamProvider.autoDispose(
+    (ref) => FirebaseAuth.instance.authStateChanges());
 
 class StatusPage extends StatelessWidget {
   const StatusPage({Key? key}) : super(key: key);
