@@ -5,6 +5,8 @@ import 'package:fireapp/provider/crud_provider.dart';
 import 'package:fireapp/services/auth_service.dart';
 import 'package:fireapp/services/crud_sevice.dart';
 import 'package:fireapp/view/create_post.dart';
+import 'package:fireapp/view/detail_page.dart';
+import 'package:fireapp/view/update_post.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -122,15 +124,58 @@ class HomePage extends ConsumerWidget {
                                     Expanded(child: Text(data[index].title)),
                                     if (authData!.uid == data[index].userId)
                                       IconButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            Get.defaultDialog(
+                                                title: 'Update',
+                                                content: Text('Customise Post'),
+                                                actions: [
+                                                  IconButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        Get.to(() => UpdatePost(
+                                                            data[index]));
+                                                      },
+                                                      icon: Icon(Icons.edit)),
+                                                  IconButton(
+                                                      onPressed: () {
+                                                        Get.defaultDialog(
+                                                            title: 'Delete',
+                                                            content: Text(
+                                                                'Are you Sure'),
+                                                            actions: [
+                                                              TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    ref.read(crudProvider.notifier).deletePost(
+                                                                        postId: data[index]
+                                                                            .postId,
+                                                                        imageId:
+                                                                            data[index].imageId);
+                                                                  },
+                                                                  child: Text(
+                                                                      'Yes')),
+                                                              TextButton(
+                                                                  onPressed:
+                                                                      () {},
+                                                                  child: Text(
+                                                                      'No'))
+                                                            ]);
+                                                      },
+                                                      icon: Icon(Icons.delete)),
+                                                ]);
+                                          },
                                           icon: Icon(Icons.more_horiz_rounded))
                                   ],
                                 ),
-                                Container(
-                                  height: 300,
-                                  width: double.infinity,
-                                  child: Image.network(
-                                    data[index].imageUrl,
+                                InkWell(
+                                  onTap: () => DetailPage(data[index], user),
+                                  child: Container(
+                                    height: 300,
+                                    width: double.infinity,
+                                    child: Image.network(
+                                      data[index].imageUrl,
+                                    ),
                                   ),
                                 ),
                                 Row(
