@@ -14,14 +14,15 @@ class CrudProvider extends StateNotifier<CommonState> {
   CrudProvider(super.state);
 
   Future<void> addPost(
-      {required String title,
+      {required String userImage,
       required String detail,
+      required String username,
       required String userId,
       required XFile image}) async {
     state = state.copyWith(
         errText: '', isLoad: true, isSuccess: false, isError: false);
     final response = await CrudService.addPost(
-        title: title, detail: detail, userId: userId, image: image);
+        userImage: userImage, detail: detail, userId: userId, image: image, username: username);
     response.fold((l) {
       state = state.copyWith(
           errText: l, isLoad: false, isSuccess: false, isError: true);
@@ -80,6 +81,25 @@ class CrudProvider extends StateNotifier<CommonState> {
     state = state.copyWith(
         errText: '', isError: false, isLoad: true, isSuccess: false);
     final response = await CrudService.likePost(
+        username: username, postId: postId, like: like);
+    response.fold(
+        (l) => {
+              state = state.copyWith(
+                  errText: l, isError: true, isLoad: false, isSuccess: false)
+            },
+        (r) => {
+              state = state.copyWith(
+                  errText: '', isError: false, isLoad: false, isSuccess: r)
+            });
+  }
+
+  Future<void> unlikePost(
+      {required String postId,
+      required String username,
+      required int like}) async {
+    state = state.copyWith(
+        errText: '', isError: false, isLoad: true, isSuccess: false);
+    final response = await CrudService.unlikePost(
         username: username, postId: postId, like: like);
     response.fold(
         (l) => {

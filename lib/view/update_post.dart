@@ -25,7 +25,6 @@ class _UpdatePostState extends ConsumerState<UpdatePost> {
 
   @override
   void initState() {
-    titleController..text = widget.post.title;
     detailController..text = widget.post.detail;
 
     super.initState();
@@ -56,20 +55,11 @@ class _UpdatePostState extends ConsumerState<UpdatePost> {
               children: [
                 Center(
                   child: Text(
-                    'Add Post',
+                    'Update Post',
                     style: TextStyle(fontSize: 20),
                   ),
                 ),
                 gapH10,
-                gapH10,
-                TextFormField(
-                  controller: titleController,
-                  decoration: InputDecoration(
-                      hintText: 'title',
-                      border: OutlineInputBorder(),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 10)),
-                ),
                 gapH10,
                 TextFormField(
                   controller: detailController,
@@ -122,13 +112,18 @@ class _UpdatePostState extends ConsumerState<UpdatePost> {
                               postId: widget.post.postId,
                               image: image,
                               imageId: widget.post.imageId);
-                          Get.back();
                         }
+                        Get.back();
+                        ShowSnack.showSuccessSnack(
+                            context, 'Post Updated successfully');
+                      }
+                      if (!_form.currentState!.validate()) {
+                        ShowSnack.showErrorSnack(context, 'There is some error.Please try again later');
                       }
                     },
                     child: crud.isLoad
                         ? Center(child: CircularProgressIndicator())
-                        : Text('Add Post')),
+                        : Text('Update Post')),
                 gapH20,
               ],
             ),

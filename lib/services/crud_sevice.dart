@@ -21,7 +21,8 @@ class CrudService {
         if (json == null) {
           // Handle the case where the data is null, you can return a default value or an empty list.
           return Post(
-            title: '',
+            userImage: '',
+            username: '',
             detail: '',
             imageUrl: '',
             postId: '',
@@ -32,7 +33,8 @@ class CrudService {
           );
         }
         return Post(
-          title: json['title'] ?? '',
+          userImage: json['userImage'] ?? '',
+          username: json['username'] ?? '',
           detail: json['detail'] ?? '',
           imageUrl: json['imageUrl'] ?? '',
           postId: e.id,
@@ -49,8 +51,9 @@ class CrudService {
   }
 
   static Future<Either<String, bool>> addPost(
-      {required String title,
+      {required String userImage,
       required String detail,
+      required String username,
       required String userId,
       required XFile image}) async {
     try {
@@ -58,8 +61,10 @@ class CrudService {
           FirebaseStorage.instance.ref().child('postImage/${image.name}');
       await ref.putFile(File(image.path));
       final url = await ref.getDownloadURL();
+
       await postDb.add({
-        "title": title,
+        "userImage": userImage,
+        "username": username,
         "detail": detail,
         "imageUrl": url,
         "userId": userId,
@@ -123,8 +128,28 @@ class CrudService {
       required int like}) async {
     try {
       await postDb.doc(postId).update({
-        'username': FieldValue.arrayUnion([username]),
-        'likes': like + 1,
+        'like': {
+          'username': FieldValue.arrayUnion([username]),
+          'likes': like + 1,
+        }
+      });
+
+      return right(true);
+    } on FirebaseException catch (e) {
+      return left(e.message.toString());
+    }
+  }
+
+  static Future<Either<String, bool>> unlikePost(
+      {required String postId,
+      required String username,
+      required int like}) async {
+    try {
+      await postDb.doc(postId).update({
+        'like': {
+          'username': FieldValue.arrayRemove([username]),
+          'likes': like - 1,
+        }
       });
 
       return right(true);

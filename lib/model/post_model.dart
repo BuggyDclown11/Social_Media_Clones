@@ -1,5 +1,5 @@
 final post = {
-  "title": "temple",
+  "userImage": "temple",
   "description": "Nice temple",
   "image": "image",
   "postId": "post1",
@@ -46,7 +46,8 @@ class Comment {
 }
 
 class Post {
-  final String title;
+  final String userImage;
+  final String username;
   final String detail;
   final String imageId;
   final String postId;
@@ -62,7 +63,8 @@ class Post {
       required this.like,
       required this.postId,
       required this.imageUrl,
-      required this.title,
+      required this.userImage,
+      required this.username,
       required this.userId});
 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -74,7 +76,8 @@ class Post {
         like: Like.fromJson(json['like']),
         postId: json['postId'],
         imageUrl: json['imageUrl'],
-        title: json['title'],
+        userImage: json['userImage'],
+        username: json['username'],
         userId: json['userId']);
   }
 }
