@@ -6,6 +6,7 @@ import 'package:fireapp/services/crud_sevice.dart';
 import 'package:fireapp/view/create_post.dart';
 import 'package:fireapp/view/detail_page.dart';
 import 'package:fireapp/view/update_post.dart';
+import 'package:fireapp/view/user_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
@@ -95,10 +96,15 @@ class HomePage extends ConsumerWidget {
                           itemBuilder: (context, index) {
                             return Column(
                               children: [
-                                CircleAvatar(
-                                  radius: 30,
-                                  backgroundImage:
-                                      NetworkImage(data[index].imageUrl!),
+                                InkWell(
+                                  onTap: () {
+                                    Get.to(() => UserPage(data[index]));
+                                  },
+                                  child: CircleAvatar(
+                                    radius: 30,
+                                    backgroundImage:
+                                        NetworkImage(data[index].imageUrl!),
+                                  ),
                                 ),
                                 Text('${data[index].firstName!}')
                               ],
