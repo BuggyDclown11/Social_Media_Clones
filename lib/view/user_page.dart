@@ -3,6 +3,7 @@ import 'package:fireapp/provider/room_provider.dart';
 import 'package:fireapp/services/crud_sevice.dart';
 import 'package:fireapp/view/chat_page.dart';
 import 'package:fireapp/view/detail_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,7 +41,14 @@ class UserPage extends ConsumerWidget {
                             final response =
                                 await ref.read(roomProvider).CreateRoom(user);
                             if (response != null) {
-                              Get.to(() => ChatPage(response, user));
+                              final currentUser = response.users.firstWhere(
+                                  (element) =>
+                                      element.id ==
+                                      FirebaseAuth.instance.currentUser!.uid);
+                              Get.to(() => ChatPage(
+                                  currentUserName: currentUser.firstName!,
+                                  room: response,
+                                  token: user.metadata!['token']));
                             }
                           },
                           child: Text('Start Chat'))

@@ -35,8 +35,15 @@ class AuthService {
   static Future<Either<String, bool>> userLogin(
       {required String email, required String password}) async {
     try {
+      final token = FirebaseMessaging.instance.getToken();
       final response = await auth.signInWithEmailAndPassword(
           email: email, password: password);
+      userDb.doc(response.user!.uid).update({
+        "metadata": {
+          'email': email,
+          'token': token,
+        }
+      });
       return right(true);
     } on FirebaseAuthException catch (e) {
       return left(e.message.toString());

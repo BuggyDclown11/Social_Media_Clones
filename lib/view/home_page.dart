@@ -1,23 +1,69 @@
 import 'package:fireapp/constant/sizes.dart';
+import 'package:fireapp/notification_service.dart';
 import 'package:fireapp/provider/auth_provider.dart';
 import 'package:fireapp/provider/crud_provider.dart';
 import 'package:fireapp/services/auth_service.dart';
 import 'package:fireapp/services/crud_sevice.dart';
 import 'package:fireapp/view/create_post.dart';
 import 'package:fireapp/view/detail_page.dart';
+import 'package:fireapp/view/recent_chat.dart';
 import 'package:fireapp/view/update_post.dart';
 import 'package:fireapp/view/user_page.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:expandable_text/expandable_text.dart';
 
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
+  @override
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
   late types.User user;
 
   @override
-  Widget build(BuildContext context, ref) {
+  void initState() {
+    // 1. This method call when app in terminate state and you get a notification
+    //     when you click on notification app open from terminated state and you can get notification data in this method
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+      if (message != null) {
+        LocalNotifiactionService.createandisplaynotification(message);
+      }
+    });
+
+    //2. This method only call when App in foreground it mean app must be opened
+    FirebaseMessaging.onMessage.listen((message) {
+      print("FirebaseMessage.onMessaging.listen");
+      if (message.notification != null) {
+        print(message.notification!.title);
+        print(message.notification!.body);
+        print('message.data11 ${message.data}');
+        LocalNotifiactionService.createandisplaynotification(message);
+      }
+    });
+
+    //3. This method only call when App in background and not terminated(not closed)
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print("FirebaseMessaging.onMessageOpenedApp.listen");
+      if (message.notification != null) {
+        print(message.notification!.title);
+        LocalNotifiactionService.createandisplaynotification(message);
+      }
+    });
+    // getToken();
+    super.initState();
+  }
+
+  void getToken() async {
+    final response = await FirebaseMessaging.instance.getToken();
+    print(response);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final userData = ref.watch(userStream);
     final singleData = ref.watch(singleStream);
     final postData = ref.watch(postStream);
@@ -63,6 +109,13 @@ class HomePage extends ConsumerWidget {
                       title: Text('Create Post'),
                       onTap: () {
                         Get.to(() => CreatePost(user));
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.message),
+                      title: Text('Recent Chats'),
+                      onTap: () {
+                        Get.to(() => RecentChat());
                       },
                     ),
                     ListTile(
